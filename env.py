@@ -10,9 +10,13 @@ class env():
         self.num_steps = config['num_steps']
         self.host_id = host_id
 
-    def launch(self):
+    def launch(self,cuda):
         self.session = gym.make('Ant-v4',render_mode="human")
         agent = MLP_agent(self.config)
+        if cuda == True:
+            agent.cuda()
+        else:
+            agent.cpu()
 
 
         while True:
