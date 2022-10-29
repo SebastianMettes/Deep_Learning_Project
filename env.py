@@ -9,9 +9,9 @@ observation, info = env.reset()
 
 #Initialize the agent
 for i in range(num_steps):
-    #Future implementation:
-    #action = agent.action(observation)
-    action = env.action_space.sample() #random input
+    
+    action = agent.forward(observation)
+    #action = env.action_space.sample() #random input
     observation, reward, terminated, truncated, info = env.step(action)
 
 
