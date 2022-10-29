@@ -1,25 +1,40 @@
 import gymnasium as gym
-from agent import agent
+from agentLib import MLP_agent
+import datetime
+import os
+import json
 
-num_steps = 1000
+class env():
+    def __init__(self,config,host_id):
+        self.config = config
+        self.num_steps = config['num_steps']
+        self.host_id = host_id
 
-#Launch the environment
-env = gym.make('Ant-v4',render_mode="human")
-observation, info = env.reset()
-
-#Initialize the agent
-for i in range(num_steps):
-    
-    action = agent.forward(observation)
-    #action = env.action_space.sample() #random input
-    observation, reward, terminated, truncated, info = env.step(action)
-
-
-    if terminated or truncated:
-        observation, info = env.reset()
-
-env.close()
+    def launch(self):
+        self.session = gym.make('Ant-v4',render_mode="human")
+        agent = MLP_agent(self.config)
 
 
+        while True:
+            now = datetime.now()
+            date_time = now.strftime("%Y%m%d%H%M%S")
 
-#
+            agent_version = agent.update_version()
+            filename = str(self.host_id)+"."+date_time+".JSON"
+            filename = os.path.join(self.config["save_dir"],str(agent_version),filename)
+
+            observation, info = env.reset()
+            action = [0,0,0,0,0,0,0,0] #Initialize 0-action as starting condition            
+
+            state_tensor = []
+
+            for i in range(self.num_steps):
+                action,digit = MLP_agent.calc_action(observation,action)
+                observation_new, reward, terminated, truncated, info = env.step(action)
+                state_tensor.append((observation,observation_new,digit,reward))
+                with open(filename,"w") as file:
+                    file.write(json.dumps(state_tensor,indent=0))
+
+                if terminated or truncated:
+                    observation, info = env.reset()
+                    break
