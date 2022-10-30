@@ -1,0 +1,16 @@
+{
+    "save_dir":"/data/sim/trial",
+    "agent_path":"/data/sim/agent",
+    "difficult_dir":"/data/sim/difficult",
+    "HIDDEN_SIZE":512,
+    "OBSERVE_SIZE":111,
+    "N_ACTIONS":256,
+    "BATCH_SIZE":300,
+    "PERCENTILE":0,
+    "learning_rate":0.001,
+    "gpu_batch_size":300,
+    "num_repeat_episodes":10,
+    "torque_multiplier":0.05
+    
+
+}

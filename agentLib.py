@@ -14,7 +14,7 @@ import time
 
 class MLP_agent(nn.Module):
     def __init__(self,agent_config):
-        super().__init()
+        super().__init__()
         self.agent_config = agent_config
         self.HIDDEN_SIZE = agent_config['HIDDEN_SIZE']
         self.OBSERVE_SIZE = agent_config['OBSERVE_SIZE']
@@ -52,7 +52,7 @@ class MLP_agent(nn.Module):
         self.net = self.net.cpu()
 
     def forward(self,observation):
-        return self.Net(observation)
+        return self.net(observation)
 
     def calc_action(self,agent_version,state,torque_input,torque_multiplier):
         if self.version!=agent_version:
@@ -77,14 +77,14 @@ class MLP_agent(nn.Module):
         return output,action
 
     def load_model(self,version_path):
-        self.Net.load_state_dict(torch.load(version_path))
+        self.net.load_state_dict(torch.load(version_path))
 
     def save_model(self,directory_path,optimizer):
         tmp_name = directory_path+'_tmp'
         if os.path.isdir(directory_path) == False:        
             os.mkdir(tmp_name, mode = 0o777)
 
-        torch.save(self.Net.state_dict(),os.path.join(tmp_name,'model.pt'))
+        torch.save(self.net.state_dict(),os.path.join(tmp_name,'model.pt'))
         torch.save(optimizer.state_dict(),os.path.join(tmp_name,'optimizer.pt'))
         shutil.move(tmp_name,directory_path)
 
