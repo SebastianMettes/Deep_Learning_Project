@@ -127,7 +127,7 @@ while True:
 #Continuously check for new json files with complete state tensors for each episode
     #create an array of filenames
     file_list = [name for name in os.listdir(trialpath) if os.path.isfile(os.path.join(trialpath,name))]
-    time.sleep(0.1)
+    time.sleep(2)
     if len(file_list) < config['BATCH_SIZE']:
         continue
     
