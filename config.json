@@ -3,14 +3,14 @@
     "agent_path":"/data/sim/agent",
     "difficult_dir":"/data/sim/difficult",
     "HIDDEN_SIZE":512,
-    "OBSERVE_SIZE":111,
+    "OBSERVE_SIZE":27,
     "N_ACTIONS":256,
-    "BATCH_SIZE":300,
-    "PERCENTILE":0,
+    "BATCH_SIZE":200,
+    "PERCENTILE":75,
     "learning_rate":0.001,
-    "gpu_batch_size":300,
-    "num_repeat_episodes":10,
-    "torque_multiplier":0.05
-    
+    "torque_multiplier":0.15,
+    "num_steps":100,
+    "cuda":"True",
+    "gpu_batch_size":50
 
 }

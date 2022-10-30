@@ -3,6 +3,8 @@ from agentLib import MLP_agent
 import datetime
 import os
 import json
+from datetime import datetime
+import torch
 
 class env():
     def __init__(self,config,host_id):
@@ -10,13 +12,9 @@ class env():
         self.num_steps = config['num_steps']
         self.host_id = host_id
 
-    def launch(self,cuda):
-        self.session = gym.make('Ant-v4',render_mode="human")
+    def launch(self):
+        self.session = gym.make('Ant-v4')
         agent = MLP_agent(self.config)
-        if cuda == True:
-            agent.cuda()
-        else:
-            agent.cpu()
 
 
         while True:
@@ -27,18 +25,21 @@ class env():
             filename = str(self.host_id)+"."+date_time+".JSON"
             filename = os.path.join(self.config["save_dir"],str(agent_version),filename)
 
-            observation, info = env.reset()
+            observation, info = self.session.reset()
+            observation = torch.tensor(observation)
             action = [0,0,0,0,0,0,0,0] #Initialize 0-action as starting condition            
 
             state_tensor = []
 
             for i in range(self.num_steps):
-                action,digit = MLP_agent.calc_action(observation,action)
-                observation_new, reward, terminated, truncated, info = env.step(action)
-                state_tensor.append((observation,observation_new,digit,reward))
+                action,digit = agent.calc_action(agent_version,observation,action)
+                observation_new, reward, terminated, truncated, info = self.session.step(action)
+                state_tensor.append((observation.tolist(),observation_new.tolist(),digit,reward))
+
                 with open(filename,"w") as file:
                     file.write(json.dumps(state_tensor,indent=0))
-
+                observation_new = torch.tensor(observation_new)
+                observation = observation_new
                 if terminated or truncated:
-                    observation, info = env.reset()
+                    observation, info = self.session.reset()
                     break

@@ -24,7 +24,8 @@ class MLP_agent(nn.Module):
         self.agent_path = agent_config['agent_path']
         self.torque_multiplier = agent_config['torque_multiplier']
         self.version = 0
-
+        self.cuda_test = agent_config['cuda']
+        self.initialize()
         if os.path.isfile(os.path.join(self.agent_path,str(1),'model.pt')):
             self.update_version()
 
@@ -44,6 +45,10 @@ class MLP_agent(nn.Module):
             nn.ReLU(),
             nn.Linear(n_actions,n_actions),
         )
+        if self.cuda_test == True:
+            self.cuda()
+        else:
+            self.cpu()
 
 
     def cuda(self):
@@ -54,11 +59,10 @@ class MLP_agent(nn.Module):
     def forward(self,observation):
         return self.net(observation)
 
-    def calc_action(self,agent_version,state,torque_input,torque_multiplier):
+    def calc_action(self,agent_version,state,torque_input):
         if self.version!=agent_version:
             self.net.load_model(os.path.join(self.agent_path,str(agent_version),'model.pt'))
-
-        action_probability = self.net.forward(torch.FloatTensor([state]))
+        action_probability = self.net.forward(state.float().unsqueeze(0))
         action_probability = nn.functional.softmax(action_probability,dim=1)
         action_probability = action_probability.data.numpy()[0]
         action = np.random.choice(len(action_probability),p=action_probability) #return an action based on softmax probability that action is most likely to produce positive reward
@@ -81,7 +85,7 @@ class MLP_agent(nn.Module):
 
     def save_model(self,directory_path,optimizer):
         tmp_name = directory_path+'_tmp'
-        if os.path.isdir(directory_path) == False:        
+        if os.path.isdir(tmp_name) == False:        
             os.mkdir(tmp_name, mode = 0o777)
 
         torch.save(self.net.state_dict(),os.path.join(tmp_name,'model.pt'))
@@ -96,7 +100,7 @@ class MLP_agent(nn.Module):
         if i>self.version:
             time.sleep(0.1)
             print('loading version ',i)
-            self.net.load_model(os.path.join(self.agent_path,str(i),'model.pt'))
+            self.load_model(os.path.join(self.agent_path,str(i),'model.pt'))
             self.version = i
         return(i)
 

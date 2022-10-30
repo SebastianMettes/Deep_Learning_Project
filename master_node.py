@@ -19,7 +19,6 @@ batch_size = config["gpu_batch_size"]
 
 #Create agent object and related components
 action_agent = MLP_agent(config)
-action_agent.initialize()
 objective = nn.CrossEntropyLoss()
 optimizer = optim.Adam(params = action_agent.net.parameters(),lr = config['learning_rate'])
 
@@ -36,7 +35,7 @@ except Exception as e:
 def update_optimizer(action_agent,config,agent_version):
     i = agent_version
     filepath,_,_,_=update_agent_filepath(config,i)
-    print(filepath)
+    print("filepath = ",filepath)
     
     print('loaded agent',i)
     action_agent.net.load_model(os.path.join(filepath,'model.pt'))
@@ -97,6 +96,7 @@ def optimal_state_tensor(config,file_list,agent_version):
     return np.mean(rewards), filtered_state_tensors
 
 
+
     
 #save initialized weights as version 1
 agent_version = 1
@@ -126,14 +126,13 @@ while True:
 #Continuously check for new json files with complete state tensors for each episode
     #create an array of filenames
     file_list = [name for name in os.listdir(trialpath) if os.path.isfile(os.path.join(trialpath,name))]
-    time.sleep(1)
+    time.sleep(2)
     if len(file_list) < config['BATCH_SIZE']:
         continue
     
 #import files into usable arrays.
 
     mean,optimal_tensor = optimal_state_tensor(config,file_list,agent_version)
-    
     if len(optimal_tensor) < batch_size:
         raise ValueError("Tensor Size was less than batch size! -- ")
     
@@ -146,8 +145,8 @@ while True:
         optimal_tensor_batch = optimal_tensor[batch_size*i:(batch_size*(i+1) - 1)]
         #optimize:
         obs_v, act_v, _ = zip(*optimal_tensor_batch)
-        obs_v = torch.stack(obs_v).reshape((-1,config["OBSERVE_SIZE"])).cuda() #Reshape the tensor to [B, observation size]
-        act_v = torch.stack(act_v).reshape((-1)).cuda()
+        obs_v = torch.concat(obs_v).reshape((-1,config["OBSERVE_SIZE"])).cuda() #Reshape the tensor to [B, observation size]
+        act_v = torch.concat(act_v).reshape((-1)).cuda()
         optimizer.zero_grad()
         action_scores_v = action_agent.net(obs_v)
         loss_v = objective(action_scores_v,act_v)
@@ -158,7 +157,7 @@ while True:
     agent_version = agent_version + 1
     filepath,trialpath,agent_version,difficult_path = update_agent_filepath(config,agent_version)
     action_agent.cpu()
-    action_agent.net.save_model(filepath,optimizer)
+    action_agent.save_model(filepath,optimizer)
     action_agent.cuda()
     loss_mean = np.mean(loss_store)
 
