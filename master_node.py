@@ -38,14 +38,15 @@ def update_optimizer(action_agent,config,agent_version):
     print("filepath = ",filepath)
     
     print('loaded agent',i)
-    action_agent.net.load_model(os.path.join(filepath,'model.pt'))
+    action_agent.load_model(os.path.join(filepath,'model.pt'))
     action_agent.cuda()
     optimizer = optim.Adam(params=action_agent.net.parameters(),lr=config['learning_rate'])
     optimizer.load_state_dict(torch.load(os.path.join(filepath,'optimizer.pt')))
         
     return(i,optimizer,action_agent)
 
-
+def load_model(self,version_path):
+        self.load_state_dict(torch.load(version_path))
 def update_agent_filepath(config,agent_version):
     filepath = os.path.join(config["agent_path"],str(agent_version))
     i=0
@@ -126,7 +127,7 @@ while True:
 #Continuously check for new json files with complete state tensors for each episode
     #create an array of filenames
     file_list = [name for name in os.listdir(trialpath) if os.path.isfile(os.path.join(trialpath,name))]
-    time.sleep(2)
+    time.sleep(0.1)
     if len(file_list) < config['BATCH_SIZE']:
         continue
     
