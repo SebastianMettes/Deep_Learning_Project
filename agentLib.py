@@ -10,9 +10,19 @@ import torch.optim as optim
 import time
 
 
-#Create network:
-
+##Create agent. Each agent must have the following:
+#__init__ function taking in the config file
+#initialization function which initializes the network
+#cuda function (see below)
+#cpu function
+#forward function
+#calculate action function
+#load model function
+#save model function
+#update version function
+#
 class MLP_agent(nn.Module):
+    
     def __init__(self,agent_config):
         super().__init__()
         self.agent_config = agent_config
