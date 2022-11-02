@@ -3,7 +3,7 @@
     "agent_path":"/data/sim/agent",
     "difficult_dir":"/data/sim/difficult",
     "HIDDEN_SIZE":512,
-    "OBSERVE_SIZE":27,
+    "OBSERVE_SIZE":29,
     "N_ACTIONS":256,
     "BATCH_SIZE":200,
     "PERCENTILE":75,

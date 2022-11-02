@@ -13,7 +13,7 @@ class env():
         self.host_id = host_id
 
     def launch(self):
-        self.session = gym.make('Ant-v4',render_mode="human")
+        self.session = gym.make('Ant-v4',exclude_current_positions_from_observation=False)
         agent = MLP_agent(self.config)
 
 
