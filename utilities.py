@@ -7,12 +7,24 @@ from tqdm.auto import tqdm
 
 class DL_Utilities():
     def __init__(self):
-        pass
+        self.data = np.genfromtxt("/data/sim/agent/data.csv",delimiter=",")
+        self.trial = "/data/sim/trial"
+        self.agent = "/data/sim/agent"
+        self.samples = [10,20,30,40,50,60,70,80,90,100] #Samples used for course plotting
 
-    def loss_plot(self):
-        pass
+    def loss(self):
+        plt.plot(self.data[:,0],self.data[:,2])
+        plt.xlabel('Epoch Number')
+        plt.ylabel('Loss Value')
+        plt.show()
 
-    def reward_plot(self):
+    def reward(self):
+        plt.plot(self.data[:,0],self.data[:,1])
+        plt.xlabel('Epoch Number')
+        plt.ylabel('Reward Value')
+        plt.show()
+
+    def collate_data(self):
         pass
 
     def position_plot(self):
@@ -21,7 +33,10 @@ class DL_Utilities():
     def velocity_plot(self):
         pass
 
+    def joint_angle_plot(self,joint_num = 0)
 
 
 if __name__ == "__main__":
-    pass
+    plots = DL_Utilities()
+    plots.loss()
+    plots.reward()
