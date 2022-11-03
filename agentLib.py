@@ -72,7 +72,10 @@ class MLP_agent(nn.Module):
     def calc_action(self,agent_version,state,torque_input):
         if self.version!=agent_version:
             self.net.load_model(os.path.join(self.agent_path,str(agent_version),'model.pt'))
-        action_probability = self.net.forward(state.float().unsqueeze(0))
+        
+        act = torch.concat([state,torch.asarray(torque_input)])
+        act = act.float().unsqueeze(0)
+        action_probability = self.net.forward(act)
         action_probability = nn.functional.softmax(action_probability,dim=1)
         action_probability = action_probability.data.numpy()[0]
         action = np.random.choice(len(action_probability),p=action_probability) #return an action based on softmax probability that action is most likely to produce positive reward

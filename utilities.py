@@ -49,8 +49,8 @@ class DL_Utilities():
         
     def position(self):
         for i in range(len(self.epochs)):
-            x_data = self.data_matrix[i,:,:,1]
-            y_data = self.data_matrix[i,:,:,2]
+            x_data = self.data_matrix[i,:,:,0]
+            y_data = self.data_matrix[i,:,:,1]
             plt.scatter(x_data,y_data)
         plt.show()
         
@@ -58,8 +58,8 @@ class DL_Utilities():
 
     def velocity(self):
         for i in range(len(self.epochs)):
-            x_data = self.data_matrix[i,:,:,13]
-            y_data = self.data_matrix[i,:,:,14]
+            x_data = self.data_matrix[i,:,:,15]
+            y_data = self.data_matrix[i,:,:,16]
             plt.scatter(x_data,y_data)
         plt.show()
         
