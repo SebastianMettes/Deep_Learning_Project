@@ -20,11 +20,11 @@ class DL_Utilities():
         if samples:
             self.samples = samples
         else:
-            self.samples = [10,20,30,40,50,60,70,80,90,100] #Samples used for course plotting
+            self.samples = [30,40,50] #Samples used for course plotting
         if epochs:
             self.epochs = epochs
         else:
-            self.epochs = [1,100,200,300,400,500]
+            self.epochs = [100,200,300,400,1500]
     def loss(self):
         plt.plot(self.data[:,0],self.data[:,2])
         plt.xlabel('Epoch Number')
@@ -52,6 +52,9 @@ class DL_Utilities():
             x_data = self.data_matrix[i,:,:,0]
             y_data = self.data_matrix[i,:,:,1]
             plt.scatter(x_data,y_data)
+        plt.xlabel("x-position (m)")
+        plt.ylabel("y-position (m)")
+        plt.legend(self.epochs,title="Epoch #")
         plt.show()
         
 
@@ -61,6 +64,9 @@ class DL_Utilities():
             x_data = self.data_matrix[i,:,:,15]
             y_data = self.data_matrix[i,:,:,16]
             plt.scatter(x_data,y_data)
+        plt.xlabel("x-velocity (m/s)")
+        plt.ylabel("y-velocity (m/s)")
+        plt.legend(self.epochs,title="Epoch #")
         plt.show()
         
 
@@ -73,6 +79,6 @@ if __name__ == "__main__":
     plots.collate_data()
     plots.position()
     plots.velocity()
-    plots.loss()
-    plots.reward()
-    plots.position()
+    #plots.loss()
+    #plots.reward()
+    #plots.position()
