@@ -5,6 +5,7 @@ import os
 import json
 from datetime import datetime
 import torch
+import numpy as np
 
 class env():
     def __init__(self,config,host_id):
@@ -26,19 +27,18 @@ class env():
             filename = os.path.join(self.config["save_dir"],str(agent_version),filename)
 
             observation, info = self.session.reset()
-            observation = torch.tensor(observation)
+            
             action = [0,0,0,0,0,0,0,0] #Initialize 0-action as starting condition            
-
+            observation = np.append(observation,action)
+            observation = torch.tensor(observation)
             state_tensor = []
 
             for i in range(self.num_steps):
                 action_old = action
                 action,digit = agent.calc_action(agent_version,observation,action)
                 observation_new, reward, terminated, truncated, info = self.session.step(action)
-                observation_new = torch.concat(observation_new,action)
-                observation_new = observation_new.unsqueeze(0)
-                observation = torch.concat(observation,action_old)
-                observation = observation.unsqueeze(0)
+                observation_new = np.append(observation_new,action)
+                observation = np.append(observation,action_old)
                 state_tensor.append((observation.tolist(),observation_new.tolist(),digit,reward))
 
                 with open(filename,"w") as file:

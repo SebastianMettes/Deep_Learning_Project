@@ -73,8 +73,7 @@ class MLP_agent(nn.Module):
         if self.version!=agent_version:
             self.net.load_model(os.path.join(self.agent_path,str(agent_version),'model.pt'))
         
-        act = torch.concat([state,torch.asarray(torque_input)])
-        act = act.float().unsqueeze(0)
+        act = state.float().unsqueeze(0)
         action_probability = self.net.forward(act)
         action_probability = nn.functional.softmax(action_probability,dim=1)
         action_probability = action_probability.data.numpy()[0]
