@@ -2,7 +2,7 @@
     "save_dir":"/data/sim/trial",
     "agent_path":"/data/sim/agent",
     "difficult_dir":"/data/sim/difficult",
-    "HIDDEN_SIZE":512,
+    "HIDDEN_SIZE":256,
     "OBSERVE_SIZE":37,
     "N_ACTIONS":256,
     "BATCH_SIZE":500,
