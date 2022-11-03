@@ -32,8 +32,13 @@ class env():
             state_tensor = []
 
             for i in range(self.num_steps):
+                action_old = action
                 action,digit = agent.calc_action(agent_version,observation,action)
                 observation_new, reward, terminated, truncated, info = self.session.step(action)
+                observation_new = torch.concat(observation_new,action)
+                observation_new = observation_new.unsqueeze(0)
+                observation = torch.concat(observation,action_old)
+                observation = observation.unsqueeze(0)
                 state_tensor.append((observation.tolist(),observation_new.tolist(),digit,reward))
 
                 with open(filename,"w") as file:
