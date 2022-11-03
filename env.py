@@ -37,8 +37,9 @@ class env():
                 action_old = action
                 action,digit = agent.calc_action(agent_version,observation,action)
                 observation_new, reward, terminated, truncated, info = self.session.step(action)
+
                 observation_new = np.append(observation_new,action)
-                observation = np.append(observation,action_old)
+
                 state_tensor.append((observation.tolist(),observation_new.tolist(),digit,reward))
 
                 with open(filename,"w") as file:
