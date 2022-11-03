@@ -39,7 +39,8 @@ def update_optimizer(action_agent,config,agent_version):
     
     print('loaded agent',i)
     action_agent.load_model(os.path.join(filepath,'model.pt'))
-    action_agent.cuda()
+    if config["cuda"]==True:
+        action_agent.cuda()
     optimizer = optim.Adam(params=action_agent.net.parameters(),lr=config['learning_rate'])
     optimizer.load_state_dict(torch.load(os.path.join(filepath,'optimizer.pt')))
         
@@ -114,7 +115,8 @@ if agent_version >1:
     print(filepath,trialpath,difficult_path)
 if agent_version == 1:
     action_agent.save_model(filepath,optimizer)
-action_agent.cuda()
+if config["cuda"]==True:
+    action_agent.cuda()
 
 
 
@@ -147,7 +149,8 @@ while True:
         #optimize:
         obs_v, act_v, _ = zip(*optimal_tensor_batch)
         obs_v = torch.concat(obs_v).reshape((-1,config["OBSERVE_SIZE"])).cuda() #Reshape the tensor to [B, observation size]
-        act_v = torch.concat(act_v).reshape((-1)).cuda()
+        if config["cuda"]==True:
+            act_v = torch.concat(act_v).reshape((-1)).cuda()
         optimizer.zero_grad()
         action_scores_v = action_agent.net(obs_v)
         loss_v = objective(action_scores_v,act_v)
@@ -159,7 +162,8 @@ while True:
     filepath,trialpath,agent_version,difficult_path = update_agent_filepath(config,agent_version)
     action_agent.cpu()
     action_agent.save_model(filepath,optimizer)
-    action_agent.cuda()
+    if config["cuda"]==True:
+        action_agent.cuda()
     loss_mean = np.mean(loss_store)
 
     data = list(data)
