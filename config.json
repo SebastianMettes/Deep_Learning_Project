@@ -10,7 +10,7 @@
     "learning_rate":0.002,
     "torque_multiplier":0.2,
     "num_steps":150,
-    "cuda":"True",
+    "cuda":"False",
     "gpu_batch_size":50
 
 }
