@@ -12,7 +12,7 @@ class FeedForwardNN(nn.Module):
 	"""
 		A standard in_dim-64-64-out_dim Feed Forward Neural Network.
 	"""
-	def __init__(self, agent_config, in_dim, out_dim):
+	def __init__(self, in_dim, out_dim):
 		"""
 			Initialize the network and set up the layers.
 			Parameters:
@@ -22,10 +22,10 @@ class FeedForwardNN(nn.Module):
 				None
 		"""
 		super(FeedForwardNN, self).__init__()
-        
-		self.layer1 = nn.Linear(in_dim, agent_config["HIDDEN_SIZE"])
-		self.layer2 = nn.Linear(agent_config["HIDDEN_SIZE"], agent_config["HIDDEN_SIZE"])
-		self.layer3 = nn.Linear(agent_config["HIDDEN_SIZE"], out_dim)
+
+		self.layer1 = nn.Linear(in_dim, 64)
+		self.layer2 = nn.Linear(64, 64)
+		self.layer3 = nn.Linear(64, out_dim)
 
 	def forward(self, obs):
 		"""

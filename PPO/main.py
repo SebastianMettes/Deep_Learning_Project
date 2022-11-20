@@ -2,8 +2,7 @@
 	This file is the executable for running PPO. It is based on this medium article: 
 	https://medium.com/@eyyu/coding-ppo-from-scratch-with-pytorch-part-1-4-613dfc1b14c8
 """
-
-import gym
+import gymnasium as gym
 import sys
 import torch
 
@@ -102,7 +101,7 @@ def main(args):
 	# Creates the environment we'll be running. If you want to replace with your own
 	# custom environment, note that it must inherit Gym and have both continuous
 	# observation and action spaces.
-	env = gym.make('Pendulum-v0')
+	env = gym.make('Ant-v4',exclude_current_positions_from_observation=False)
 
 	# Train or test, depending on the mode specified
 	if args.mode == 'train':

@@ -4,7 +4,7 @@
 			It can be found here: https://spinningup.openai.com/en/latest/_images/math/e62a8971472597f4b014c2da064f636ffe365ba3.svg
 """
 
-import gym
+import gymnasium as gym
 import time
 
 import numpy as np
@@ -179,6 +179,7 @@ class PPO:
 			# Reset the environment. sNote that obs is short for observation. 
 			obs = self.env.reset()
 			done = False
+			truncated = False
 
 			# Run an episode for a maximum of max_timesteps_per_episode timesteps
 			for ep_t in range(self.max_timesteps_per_episode):
@@ -189,12 +190,14 @@ class PPO:
 				t += 1 # Increment timesteps ran this batch so far
 
 				# Track observations in this batch
+				if len(obs) !=29:
+					obs = obs[0]
 				batch_obs.append(obs)
 
 				# Calculate action and make a step in the env. 
 				# Note that rew is short for reward.
 				action, log_prob = self.get_action(obs)
-				obs, rew, done, _ = self.env.step(action)
+				obs, rew, done, truncated, info = self.env.step(action)
 
 				# Track recent reward, action, and action log probability
 				ep_rews.append(rew)
@@ -203,6 +206,11 @@ class PPO:
 
 				# If the environment tells us the episode is terminated, break
 				if done:
+
+					break
+		
+				elif truncated:
+
 					break
 
 			# Track episodic lengths and rewards
@@ -210,6 +218,8 @@ class PPO:
 			batch_rews.append(ep_rews)
 
 		# Reshape data as tensors in the shape specified in function description, before returning
+
+
 		batch_obs = torch.tensor(batch_obs, dtype=torch.float)
 		batch_acts = torch.tensor(batch_acts, dtype=torch.float)
 		batch_log_probs = torch.tensor(batch_log_probs, dtype=torch.float)
@@ -259,6 +269,10 @@ class PPO:
 				log_prob - the log probability of the selected action in the distribution
 		"""
 		# Query the actor network for a mean action
+		if type(obs)==tuple:
+			obs = obs[0]
+		if isinstance(obs,np.ndarray):
+			obs = torch.tensor(obs,dtype=torch.float)
 		mean = self.actor(obs)
 
 		# Create a distribution with the mean action and std from the covariance matrix above.
