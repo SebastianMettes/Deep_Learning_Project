@@ -23,7 +23,7 @@ class FeedForwardNN(nn.Module):
 		"""
 		super(FeedForwardNN, self).__init__()
 
-		self.layer1 = nn.Linear(in_dim, 64)
+		self.layer1 = nn.Linear(in_dim, 128)
 		self.layer2 = nn.Linear(128, 256)
 		self.layer3 = nn.Linear(256, 256)
 		self.layer4 = nn.Linear(256,128)
