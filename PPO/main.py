@@ -92,7 +92,7 @@ def main(args):
 				'max_timesteps_per_episode': 100, 
 				'gamma': 0.99, 
 				'n_updates_per_iteration': 10,
-				'lr': 3e-3, 
+				'lr': 3e-5, 
 				'clip': 0.2,
 				'render': True,
 				'render_every_i': 10
