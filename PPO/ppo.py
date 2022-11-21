@@ -77,7 +77,7 @@ class PPO:
 		while t_so_far < total_timesteps:                                                                       # ALG STEP 2
 			# Autobots, roll out (just kidding, we're collecting our batch simulations here)
 			batch_obs, batch_acts, batch_log_probs, batch_rtgs, batch_lens = self.rollout()                     # ALG STEP 3
-
+			
 			# Calculate how many timesteps we collected this batch
 			t_so_far += np.sum(batch_lens)
 
