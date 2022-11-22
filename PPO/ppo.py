@@ -273,7 +273,8 @@ class PPO:
 			obs = obs[0]
 		if isinstance(obs,np.ndarray):
 			obs = torch.tensor(obs,dtype=torch.float)
-		mean = self.actor(obs)
+		tan = nn.Tanh()
+		mean = tan(self.actor(obs))
 
 		# Create a distribution with the mean action and std from the covariance matrix above.
 		# For more information on how this distribution works, check out Andrew Ng's lecture on it:
@@ -308,7 +309,9 @@ class PPO:
 
 		# Calculate the log probabilities of batch actions using most recent actor network.
 		# This segment of code is similar to that in get_action()
-		mean = self.actor(batch_obs)
+		tan = nn.Tanh()
+		mean = tan(self.actor(batch_obs))
+		
 		dist = MultivariateNormal(mean, self.cov_mat)
 		log_probs = dist.log_prob(batch_acts)
 

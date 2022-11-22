@@ -101,7 +101,7 @@ def main(args):
 	# Creates the environment we'll be running. If you want to replace with your own
 	# custom environment, note that it must inherit Gym and have both continuous
 	# observation and action spaces.
-	env = gym.make('Ant-v4',exclude_current_positions_from_observation=False)
+	env = gym.make('Ant-v4',exclude_current_positions_from_observation=False)#,render_mode='human')
 
 	# Train or test, depending on the mode specified
 	if args.mode == 'train':
