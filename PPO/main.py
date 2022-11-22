@@ -1,6 +1,8 @@
 """
 	This file is the executable for running PPO. It is based on this medium article: 
 	https://medium.com/@eyyu/coding-ppo-from-scratch-with-pytorch-part-1-4-613dfc1b14c8
+
+	to continue training without starting from scratch, run: python main.py --actor_model ppo_actor.pth --critic_model ppo_critic.pth
 """
 import gymnasium as gym
 import sys
@@ -88,7 +90,7 @@ def main(args):
 	# ArgumentParser because it's too annoying to type them every time at command line. Instead, you can change them here.
 	# To see a list of hyperparameters, look in ppo.py at function _init_hyperparameters
 	hyperparameters = {
-				'timesteps_per_batch': 1024, 
+				'timesteps_per_batch': 600, 
 				'max_timesteps_per_episode': 150, 
 				'gamma': 0.99, 
 				'n_updates_per_iteration': 10,
