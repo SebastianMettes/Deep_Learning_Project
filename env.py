@@ -1,6 +1,5 @@
 import gymnasium as gym
 from agentLib import MLP_agent
-from agentLib import PPO_agent
 import datetime
 import os
 import json

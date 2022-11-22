@@ -5,7 +5,7 @@
     "HIDDEN_SIZE":256,
     "OBSERVE_SIZE":37,
     "N_ACTIONS":256,
-    "BATCH_SIZE":500,
+    "BATCH_SIZE":180,
     "PERCENTILE":90,
     "NUM_CONT_ACTIONS":8,
     "learning_rate":0.002,
@@ -13,6 +13,6 @@
     "torque_multiplier":0.2,
     "num_steps":150,
     "cuda":"False",
-    "gpu_batch_size":50
+    "gpu_batch_size":18
 
 }
