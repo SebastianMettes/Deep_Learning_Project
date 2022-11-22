@@ -8,7 +8,7 @@ import json
 import time
 import numpy as np
 from agentLib import MLP_agent
-
+from agentLib import RNN_Agent
 
 ##load config.json  
 with open("/data/sim/config.json","r") as file:
@@ -18,7 +18,7 @@ with open("/data/sim/config.json","r") as file:
 batch_size = config["gpu_batch_size"]
 
 #Create agent object and related components
-action_agent = MLP_agent(config)
+action_agent = RNN_Agent(config)
 objective = nn.CrossEntropyLoss()
 optimizer = optim.Adam(params = action_agent.net.parameters(),lr = config['learning_rate'])
 
@@ -154,9 +154,9 @@ while True:
         else:
             act_v = torch.concat(act_v).reshape((-1)).cpu()
         optimizer.zero_grad()
-        action_scores_v = action_agent.net(obs_v)
+        action_scores_v = action_agent.forward(obs_v)
         loss_v = objective(action_scores_v,act_v)
-        loss_v.backward()
+        loss_v.backward(retain_graph=True)
         optimizer.step()
         loss_store.append(loss_v.detach().cpu().item()) 
 
