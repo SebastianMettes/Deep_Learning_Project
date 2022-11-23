@@ -90,7 +90,7 @@ def main(args):
 	# ArgumentParser because it's too annoying to type them every time at command line. Instead, you can change them here.
 	# To see a list of hyperparameters, look in ppo.py at function _init_hyperparameters
 	hyperparameters = {
-				'timesteps_per_batch': 600, 
+				'timesteps_per_batch': 1200, 
 				'max_timesteps_per_episode': 150, 
 				'gamma': 0.99, 
 				'n_updates_per_iteration': 10,
