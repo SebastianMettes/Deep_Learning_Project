@@ -124,9 +124,10 @@ class PPO:
 			# Autobots, roll out (just kidding, we're collecting our batch simulations here)
 			
 			#Calculate lambda which slowly decreases exploration over time by modifying the cov_matrix
-			l = (math.log(0.25)-math.log(0.0001))/total_timesteps
+			#l = (math.log(0.25)-math.log(0.0001))/total_timesteps
 			
-			self.cov_var = torch.full(size=(self.act_dim,), fill_value=0.5*math.exp(-l*t_so_far))
+			#self.cov_var = torch.full(size=(self.act_dim,), fill_value=0.5*math.exp(-l*t_so_far))
+			self.cov_var = torch.full(size=(self.act_dim,), fill_value = 0.00001*(1-(t_so_far/(1.01*total_timesteps))))
 			self.cov_mat = torch.diag(self.cov_var)	
 			print(self.cov_mat)		
 			batch_obs, batch_acts, batch_log_probs, batch_rtgs, batch_lens = self.rollout()                     # ALG STEP 3
