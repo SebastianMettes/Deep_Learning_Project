@@ -6,13 +6,15 @@
 
 import gymnasium as gym
 import time
-
+import json
 import numpy as np
 import time
+import math
 import torch
 import torch.nn as nn
 from torch.optim import Adam
 from torch.distributions import MultivariateNormal
+from eval_policy import eval_policy
 
 class PPO:
 	"""
@@ -49,7 +51,8 @@ class PPO:
 		self.critic_optim = Adam(self.critic.parameters(), lr=self.lr)
 
 		# Initialize the covariance matrix used to query the actor for actions
-		self.cov_var = torch.full(size=(self.act_dim,), fill_value=0.00001)
+
+		self.cov_var = torch.full(size=(self.act_dim,), fill_value=0.25)
 		self.cov_mat = torch.diag(self.cov_var)
 
 		# This logger will help us with printing out summaries of each iteration
@@ -61,6 +64,40 @@ class PPO:
 			'batch_rews': [],       # episodic returns in batch
 			'actor_losses': [],     # losses of actor network in current iteration
 		}
+	def test(self):
+		obs = self.env.reset()
+		t = 0
+		batch_obs = []
+		episode_rewards = []
+		episode_actions = []
+		done = False
+		while t < self.timesteps_per_batch:
+			# If render is specified, render the environment
+			t += 1 # Increment timesteps ran this batch so far
+
+			# Track observations in this batch
+			if len(obs) !=29:
+				obs = obs[0]
+			
+			batch_obs.append(obs[0:3].tolist())
+
+			# Calculate action and make a step in the env. 
+			# Note that rew is short for reward.
+					# Query the actor network for a mean action
+			if type(obs)==tuple:
+				obs = obs[0]
+			if isinstance(obs,np.ndarray):
+				obs = torch.tensor(obs,dtype=torch.float)
+			tan = nn.Tanh()
+			action = tan(self.actor(obs))
+			action = action.detach().numpy()
+			obs, rew, done, truncated, info = self.env.step(action)
+
+			# Track recent reward, action, and action log probability
+			episode_actions.append(action.tolist())
+
+		print(sum(episode_rewards))
+		return batch_obs,episode_actions
 
 	def learn(self, total_timesteps):
 		"""
@@ -74,12 +111,32 @@ class PPO:
 		print(f"{self.timesteps_per_batch} timesteps per batch for a total of {total_timesteps} timesteps")
 		t_so_far = 0 # Timesteps simulated so far
 		i_so_far = 0 # Iterations ran so far
+
+		#create file to save loss, reward, path traversed, 
+		self.actor_loss_summary = []
+
+		self.reward_summary = []
+		self.path_summary = []
+		self.action_summary = []
+		self.test_iteration = []
+	
 		while t_so_far < total_timesteps:                                                                       # ALG STEP 2
 			# Autobots, roll out (just kidding, we're collecting our batch simulations here)
+			
+			#Calculate lambda which slowly decreases exploration over time by modifying the cov_matrix
+			l = (math.log(0.25)-math.log(0.0001))/total_timesteps
+			
+			self.cov_var = torch.full(size=(self.act_dim,), fill_value=0.5*math.exp(-l*t_so_far))
+			self.cov_mat = torch.diag(self.cov_var)	
+			print(self.cov_mat)		
 			batch_obs, batch_acts, batch_log_probs, batch_rtgs, batch_lens = self.rollout()                     # ALG STEP 3
 			
 			# Calculate how many timesteps we collected this batch
 			t_so_far += np.sum(batch_lens)
+			test_path, test_actions = self.test()
+			self.path_summary.append(test_path)
+			self.action_summary.append(test_actions)
+			self.test_iteration.append(float(t_so_far))
 
 			# Increment the number of iterations
 			i_so_far += 1
@@ -144,6 +201,13 @@ class PPO:
 				torch.save(self.actor.state_dict(), './ppo_actor.pth')
 				torch.save(self.critic.state_dict(), './ppo_critic.pth')
 
+		dump_object = json.dumps([self.path_summary,self.action_summary,self.reward_summary,self.actor_loss_summary,self.test_iteration],indent=4)
+
+		with open("graphable_results.json","w") as outfile:
+			outfile.write(dump_object)
+
+
+
 	def rollout(self):
 		"""
 			Too many transformers references, I'm sorry. This is where we collect the batch of data
@@ -196,6 +260,7 @@ class PPO:
 
 				# Calculate action and make a step in the env. 
 				# Note that rew is short for reward.
+				
 				action, log_prob = self.get_action(obs)
 				obs, rew, done, truncated, info = self.env.step(action)
 
@@ -383,6 +448,8 @@ class PPO:
 		avg_ep_rews = str(round(avg_ep_rews, 2))
 		avg_actor_loss = str(round(avg_actor_loss, 5))
 
+		self.actor_loss_summary.append(avg_actor_loss)
+		self.reward_summary.append(avg_ep_rews)
 		# Print logging statements
 		print(flush=True)
 		print(f"-------------------- Iteration #{i_so_far} --------------------", flush=True)
