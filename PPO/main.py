@@ -44,7 +44,7 @@ def train(env, hyperparameters, actor_model, critic_model):
 	# Train the PPO model with a specified total timesteps
 	# NOTE: You can change the total timesteps here, I put a big number just because
 	# you can kill the process whenever you feel like PPO is converging
-	model.learn(total_timesteps=5000000)
+	model.learn(total_timesteps=10000000)
 
 def test(env, actor_model):
 	"""
@@ -94,7 +94,7 @@ def main(args):
 				'max_timesteps_per_episode': 150, 
 				'gamma': 0.99, 
 				'n_updates_per_iteration': 10,
-				'lr': 3e-5, 
+				'lr': 1e-5, 
 				'clip': 0.2,
 				'render': True,
 				'render_every_i': 10
@@ -103,7 +103,7 @@ def main(args):
 	# Creates the environment we'll be running. If you want to replace with your own
 	# custom environment, note that it must inherit Gym and have both continuous
 	# observation and action spaces.
-	env = gym.make('Ant-v4',exclude_current_positions_from_observation=False,render_mode='human')
+	env = gym.make('Ant-v4',exclude_current_positions_from_observation=False)#,render_mode='human')
 
 	# Train or test, depending on the mode specified
 	if args.mode == 'train':

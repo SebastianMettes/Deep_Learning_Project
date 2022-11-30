@@ -127,17 +127,17 @@ class PPO:
 			#l = (math.log(0.25)-math.log(0.0001))/total_timesteps
 			
 			#self.cov_var = torch.full(size=(self.act_dim,), fill_value=0.5*math.exp(-l*t_so_far))
-			self.cov_var = torch.full(size=(self.act_dim,), fill_value = 0.00001*(1-(t_so_far/(1.01*total_timesteps))))
+			self.cov_var = torch.full(size=(self.act_dim,), fill_value = 0.25*(1-(t_so_far/(1.0005*total_timesteps))))
 			self.cov_mat = torch.diag(self.cov_var)	
-			print(self.cov_mat)		
 			batch_obs, batch_acts, batch_log_probs, batch_rtgs, batch_lens = self.rollout()                     # ALG STEP 3
 			
 			# Calculate how many timesteps we collected this batch
 			t_so_far += np.sum(batch_lens)
-			test_path, test_actions = self.test()
-			self.path_summary.append(test_path)
-			self.action_summary.append(test_actions)
-			self.test_iteration.append(float(t_so_far))
+			if i_so_far%20 ==0:
+				test_path, test_actions = self.test()
+				self.path_summary.append(test_path)
+				self.action_summary.append(test_actions)
+				self.test_iteration.append(float(t_so_far))
 
 			# Increment the number of iterations
 			i_so_far += 1
@@ -448,9 +448,9 @@ class PPO:
 		avg_ep_lens = str(round(avg_ep_lens, 2))
 		avg_ep_rews = str(round(avg_ep_rews, 2))
 		avg_actor_loss = str(round(avg_actor_loss, 5))
-
-		self.actor_loss_summary.append(avg_actor_loss)
-		self.reward_summary.append(avg_ep_rews)
+		if i_so_far%20 == 0:
+			self.actor_loss_summary.append(avg_actor_loss)
+			self.reward_summary.append(avg_ep_rews)
 		# Print logging statements
 		print(flush=True)
 		print(f"-------------------- Iteration #{i_so_far} --------------------", flush=True)
