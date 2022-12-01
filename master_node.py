@@ -154,8 +154,8 @@ while True:
         obs_v = torch.concat(obs_v).reshape((-1,config["OBSERVE_SIZE"])) #Reshape the tensor to [B, observation size]
         if config["cuda"]==True:
             act_v = torch.concat(act_v).reshape((-1)).cuda()
-        #else:
-            #act_v = torch.concat(act_v).reshape((-1)).cpu()
+        else:
+            act_v = torch.concat(act_v).reshape((-1)).cpu()
         optimizer.zero_grad()
         action_scores_v = action_agent.forward(obs_v)
         loss_v = objective(action_scores_v,act_v)
