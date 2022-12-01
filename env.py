@@ -1,5 +1,6 @@
 import gymnasium as gym
 from agentLib import MLP_agent
+from agentLib import DLP_agent
 import datetime
 import os
 import json
@@ -14,8 +15,8 @@ class env():
         self.host_id = host_id
 
     def launch(self):
-        self.session = gym.make('Ant-v4',exclude_current_positions_from_observation=False)
-        agent = MLP_agent(self.config)
+        self.session = gym.make('Ant-v4',exclude_current_positions_from_observation=False)#,render_mode='human')
+        agent = DLP_agent(self.config)
 
 
         while True:
@@ -57,8 +58,8 @@ class env_PPO():
         self.host_id = host_id
 
     def launch(self):
-        self.session = gym.make('Ant-v4',exclude_current_positions_from_observation=False)
-        agent = PPO_agent(self.config)
+        self.session = gym.make('Ant-v4',exclude_current_positions_from_observation=False,render_mode = "human")
+        agent = MLP_agent(self.config)
 
 
         while True:
