@@ -8,7 +8,7 @@ import json
 import time
 import numpy as np
 from agentLib import MLP_agent
-from agentLib import RNN_Agent
+from agentLib import DLP_agent
 
 ##load config.json  
 with open("/data/sim/config.json","r") as file:
@@ -18,7 +18,7 @@ with open("/data/sim/config.json","r") as file:
 batch_size = config["gpu_batch_size"]
 
 #Create agent object and related components
-action_agent = RNN_Agent(config)
+action_agent = DLP_agent(config)
 objective = nn.CrossEntropyLoss()
 optimizer = optim.Adam(params = action_agent.net.parameters(),lr = config['learning_rate'])
 
@@ -41,8 +41,11 @@ def update_optimizer(action_agent,config,agent_version):
     action_agent.load_model(os.path.join(filepath,'model.pt'))
     if config["cuda"]==True:
         action_agent.cuda()
+    else:
+        action_agent.cpu()
     optimizer = optim.Adam(params=action_agent.net.parameters(),lr=config['learning_rate'])
-    optimizer.load_state_dict(torch.load(os.path.join(filepath,'optimizer.pt')))
+    optimizer = optimizer
+    optimizer.load_state_dict(torch.load(os.path.join(filepath,'optimizer.pt'),map_location='cpu'))
         
     return(i,optimizer,action_agent)
 
@@ -148,11 +151,11 @@ while True:
         optimal_tensor_batch = optimal_tensor[batch_size*i:(batch_size*(i+1) - 1)]
         #optimize:
         obs_v, act_v, _ = zip(*optimal_tensor_batch)
-        obs_v = torch.concat(obs_v).reshape((-1,config["OBSERVE_SIZE"])).cpu() #Reshape the tensor to [B, observation size]
+        obs_v = torch.concat(obs_v).reshape((-1,config["OBSERVE_SIZE"])) #Reshape the tensor to [B, observation size]
         if config["cuda"]==True:
             act_v = torch.concat(act_v).reshape((-1)).cuda()
-        else:
-            act_v = torch.concat(act_v).reshape((-1)).cpu()
+        #else:
+            #act_v = torch.concat(act_v).reshape((-1)).cpu()
         optimizer.zero_grad()
         action_scores_v = action_agent.forward(obs_v)
         loss_v = objective(action_scores_v,act_v)
